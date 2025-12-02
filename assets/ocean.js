@@ -1,10 +1,3 @@
-/**
- * Flat-shaded ocean primitive.
- * https://github.com/donmccurdy/aframe-extras
- *
- * Based on a Codrops tutorial:
- * http://tympanus.net/codrops/2016/04/26/the-aviator-animating-basic-3d-scene-threejs/
- */
 AFRAME.registerPrimitive('a-ocean', {
   defaultComponents: {
     ocean: {},
@@ -45,10 +38,6 @@ AFRAME.registerComponent('ocean', {
     opacity: {default: 0.8}
   },
 
-  /**
-   * Use play() instead of init(), because component mappings – unavailable as dependencies – are
-   * not guaranteed to have parsed when this component is initialized.
-   */
   play: function () {
     const el = this.el,
         data = this.data;
@@ -89,11 +78,29 @@ AFRAME.registerComponent('ocean', {
     if (!dt) return;
 
     const verts = this.mesh.geometry.vertices;
-    for (let v, vprops, i = 0; (v = verts[i]); i++){
+    for (let v, vprops, i = 0; (v = verts[i]); i++) {
       vprops = this.waves[i];
       v.z = vprops.z + Math.sin(vprops.ang) * vprops.amp;
       vprops.ang += vprops.speed * dt;
     }
     this.mesh.geometry.verticesNeedUpdate = true;
+  }
+});
+
+AFRAME.registerComponent('lane-controls', {
+  tick: function () {
+    const cameraRotation = this.el.object3D.rotation;
+    const player = document.getElementById('player');
+    
+    if (cameraRotation.y > 0.1) {
+      // Move player to the left lane
+      player.setAttribute('position', { x: -0.5, y: 0.5, z: 0 });
+    } else if (cameraRotation.y < -0.1) {
+      // Move player to the right lane
+      player.setAttribute('position', { x: 0.5, y: 0.5, z: 0 });
+    } else {
+      // Keep player centered
+      player.setAttribute('position', { x: 0, y: 0.5, z: 0 });
+    }
   }
 });
